@@ -116,7 +116,7 @@
 
 					$('#nuiwr').html(listLog);
 					// $('#nuicr').html(wr);
-					$('#nuiheader').html(getDateStr(-1) +"&nbsp;&nbsp;&nbsp;"+ wr);
+					$('#nuiheader').html(getDateStr(-1) + "&nbsp;&nbsp;&nbsp;" + wr);
 				},
 				function (xhr, ajaxOptions, thrownError) {
 					alert("Có lỗi xảy ra, xin hãy thử lại \n" + thrownError);
@@ -137,13 +137,41 @@
 						$('#nuiinfo').html("<h3>User Info</h3><b>id: " + data.data[0].uid + '</b><br/>Cannot get user info<br/>')
 						return;
 					}
-					/*var profile_pic_id = data.profile_pic.match(/[0-9]+_[0-9]+_[0-9]+/);
-					profile_pic_id = profile_pic_id[0].split('_');*/
-					$('#nuiinfo').html("<h3>User Info</h3><b>ID của bạn: " + data.data[0].uid + '</b><br/>Crush: ' +
+
+					let uinfo = "<h3>User Info</h3><b>ID của bạn: " + data.data[0].uid + '</b><br/>Crush: ' +
 						"<a href=\"https://facebook.com/" + data.data[0].crushid + '\"" target=\"_blank\">Link facebook crush</a><br/>' +
-						"Loại Reaction: " + data.data[0].typereaction +
-						"<img src=\"https://cdn.iconscout.com/icon/free/png-64/love-2387666-1991064.png\" width=\"20px\"/><br/>" +
-						"<div id='btnStart'><button class=\"btn btn-primary\" onclick=\"sendActionReaction('start')\">Start Auto</button></div>");
+						"Loại Reaction: " + data.data[0].typereaction
+
+					switch (data.data[0].typereaction) {
+						case 'Thích':
+							uinfo += "<img src=\"./img/like-16.png\" width=\"20px\"/><br/>";
+							break;
+						case 'Yêu thích':
+							uinfo += "<img src=\"./img/love-16.png\" width=\"20px\"/><br/>";
+							break;
+						case 'Haha':
+							uinfo += "<img src=\"./img/haha-16.png\" width=\"20px\"/><br/>";
+							break;
+						case 'Wow':
+							uinfo += "<img src=\"./img/wow-16.png\" width=\"20px\"/><br/>";
+							break;
+						case 'Thương thương':
+							uinfo += "<img src=\"./img/care-16.png\" width=\"20px\"/><br/>";
+							break;
+						case 'Buồn':
+							uinfo += "<img src=\"./img/sad-16.png\" width=\"20px\"/><br/>";
+							break;
+						case 'Phẫn nộ':
+							uinfo += "<img src=\"./img/angry-16.png\" width=\"20px\"/><br/>";
+							break;
+						default:
+							uinfo += "<img src=\"./img/love-16.png\" width=\"20px\"/><br/>";
+							break;
+					}
+
+					uinfo += "<div id='btnStart'><button class=\"btn btn-primary\" onclick=\"sendActionReaction('start')\">Start Auto</button></div>"
+
+					$('#nuiinfo').html(uinfo);
 				},
 				function (xhr, ajaxOptions, thrownError) {
 					$('#nuiinfo').text(thrownError);
