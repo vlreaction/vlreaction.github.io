@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Auto Reaction - Admin</title>
+
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/datepicker3.css" rel="stylesheet">
+	<link href="css/styles.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	<script src="./js/jquery.dd.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="./css/dd.css" />
+
+	<!--Icons-->
+	<script src="js/lumino.glyphs.js"></script>
+
+	<style>
+		a:hover {
+			cursor: pointer
+		}
+	</style>
+
+</head>
+
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+					data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span>Auto Reaction </span>Admin</a>
+			</div>
+		</div>
+	</nav>
+
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<ul class="nav menu">
+			<li><a href="index.html"><svg class="glyph stroked app-window">
+						<use xlink:href="#stroked-app-window"></use>
+					</svg> Thông tin</a></li>
+			<li class="active"><a><svg class="glyph stroked app-window">
+						<use xlink:href="#stroked-app-window"></use>
+					</svg> Công cụ</a></li>
+			<li role="presentation" class="divider"></li>
+			<li><a href="logout.html"><svg class="glyph stroked male-user">
+						<use xlink:href="#stroked-male-user"></use>
+					</svg> Đăng xuất</a></li>
+			<li role="presentation" class="divider"></li>
+		</ul>
+
+	</div>
+	<!--/.sidebar-->
+
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<div class="col-lg-12">
+				<h2>Công cụ</h2>
+			</div>
+			<div class="col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<b>Phiên bản auto: </b><span id="version"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Chỉnh sửa thông tin</div>
+					<div class="panel-body col-xs-7">
+						<div class="form-group">
+							<label>UID:</label>
+							<input class="form-control" id="uid" placeholder="1000043523xxxxx">
+							<label>Cookies:</label>
+							<input class="form-control" id="cookie" type="password" placeholder="Cookie">
+							<label>Link FB crush:</label>
+							<input class="form-control" id="crushID"
+								placeholder="https://facebook.com/profile.php?id=1000043523xxxxx">
+							<label>Loại cảm xúc:</label>
+							<select class="form-control" id="typeReaction">
+								<option value="Haha" data-image="./img/haha-16.png">Haha</option>
+								<option value="Thích" data-image="./img/like-16.png">Thích</option>
+								<option value="Yêu thích" data-image="./img/love-16.png">Yêu thích</option>
+								<option value="Thương thương" data-image="./img/care-16.png">Thương thương</option>
+								<option value="Wow" data-image="./img/wow-16.png">Wow</option>
+								<option value="Buồn" data-image="./img/sad-16.png">Buồn</option>
+								<option value="Phẫn nộ" data-image="./img/angry-16.png">Phẫn nộ</option>
+							</select>
+						</div>
+						<b>Lưu ý:</b> UID của bạn phải nhập chính xác nếu không tools sẽ không chạy!<br /><br />
+						<button class=" btn btn-primary" onclick="saveUserInfo()">Lưu lại</button>
+					</div>
+				</div>
+			</div>
+			<!-- <div class="col-sm-6 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Sao lưu</div>
+					<div class="panel-body">
+						Tính năng này chạy được trên tất cả các phiên bản.<br/>Tạo 1 bản sao lưu trạng thái ghép cặp của các cuộc trò chuyện:<br/><br/>
+						<button class="btn btn-primary" onclick="getBackupFile()" id="backup_btn">Tải bản sao lưu</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Khôi phục</div>
+					<div class="panel-body">
+						Chọn file:<br/>
+						<input type="file" id="fileToLoad" onclick="loadBackupFile()"><br/>
+						<b>Lưu ý:</b> Tính năng này chỉ chạy trên bản 4.0 trở lên
+						<b id="restore_status"></b>
+					</div>
+				</div>
+			</div> -->
+
+		</div><!-- /.row -->
+
+	</div>
+	<!--/.main-->
+
+	<!-- <script src="js/jquery-1.11.1.min.js"></script> -->
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-datepicker.js"></script>
+	<script src="js/cookie.js"></script>
+	<script>
+
+		makeRequest("/admin/version", {},
+			function (r) {
+				$("#version").text(r.version);
+			}, function () {
+				$("#version").text("Cũ hơn 4.0 (bạn nên nâng cấp lên bản 4.0!)");
+			}
+		);
+
+		function saveUserInfo() {
+			let uid = $('#uid').val()
+			let cookie = $('#cookie').val()
+			let crush = $('#crushID').val()
+			let typereaction = $('#typeReaction').val()
+			makeRequest(
+				'/admin/edit/user',
+				{
+					token: getAppToken(),
+					uid: uid,
+					cookie: cookie,
+					crushid: crush,
+					typereaction: typereaction,
+					type: 'edit'
+				},
+				(data) => {
+					if (data.status !== 'OK') {
+						alert('Có lỗi xảy ra vui lòng thử lại!');
+					}
+					else {
+						location.href = '/admin';
+					}
+				}
+			)
+		}
+
+		function getDateStr(time) {
+			var currentdate;
+			if (time == -1) currentdate = new Date();
+			else currentdate = new Date(time);
+			return currentdate.getDate() + "/"
+				+ (currentdate.getMonth() + 1) + "/"
+				+ currentdate.getFullYear() + " "
+				+ (currentdate.getHours() < 10 ? "0" : "") + currentdate.getHours() + ":"
+				+ (currentdate.getMinutes() < 10 ? "0" : "") + currentdate.getMinutes() + ":"
+				+ (currentdate.getSeconds() < 10 ? "0" : "") + currentdate.getSeconds() + ".";
+		}
+
+		function getFileName() {
+			return "chatbot_backup_" + getDateStr(-1).replace(/\//g, '-').replace(/\:/g, '-').replace(/\s+/, '_') + "ncb";
+		}
+
+		!function ($) {
+			$(document).on("click", "ul.nav li.parent > a > span.icon", function () {
+				$(this).find('em:first').toggleClass("glyphicon-minus");
+			});
+			$(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+		}(window.jQuery);
+
+		$(window).on('resize', function () {
+			if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+		})
+		$(window).on('resize', function () {
+			if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+		})
+
+		makeRequest("/admin/userinfo",
+			{ token: getAppToken() },
+			function (data) {
+				if (data == "ERR_AUTH") {
+					redirectToLogin();
+					return;
+				}
+				else {
+					$('#uid').val(data.data[0].uid);
+					$('#cookie').val(data.data[0].cookie);
+					$('#crushID').val(data.data[0].crushid);
+					$('#typeReaction').val(data.data[0].typereaction);
+				}
+				$(document).ready(function (e) {
+					let i = document.getElementById('typeReaction').options.selectedIndex;
+					console.log(i);
+					try {
+						$("body select").msDropDown().data("dd").set("selectedIndex", i);
+					} catch (e) {
+						alert(e.message);
+					}
+				});
+			});
+	</script>
+</body>
+
+</html>

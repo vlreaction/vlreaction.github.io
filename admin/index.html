@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Auto Reaction - Admin</title>
+
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/datepicker3.css" rel="stylesheet">
+	<link href="css/styles.css" rel="stylesheet">
+
+	<!--Icons-->
+	<script src="js/lumino.glyphs.js"></script>
+
+	<!--[if lt IE 9]>
+<script src="js/html5shiv.js"></script>
+<script src="js/respond.min.js"></script>
+<![endif]-->
+
+	<style>
+		a:hover {
+			cursor: pointer
+		}
+	</style>
+
+</head>
+
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+					data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span>Auto Reaction </span>Admin</a>
+			</div>
+
+		</div><!-- /.container-fluid -->
+	</nav>
+
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<ul class="nav menu">
+			<li class="active"><a><svg class="glyph stroked app-window">
+						<use xlink:href="#stroked-app-window"></use>
+					</svg> Thông tin</a></li>
+			<li><a href="utils.html"><svg class="glyph stroked app-window">
+						<use xlink:href="#stroked-app-window"></use>
+					</svg> Công cụ</a></li>
+			<li role="presentation" class="divider"></li>
+			<li><a href="logout.html"><svg class="glyph stroked male-user">
+						<use xlink:href="#stroked-male-user"></use>
+					</svg> Đăng xuất</a></li>
+			<li role="presentation" class="divider"></li>
+		</ul>
+	</div>
+	<!--/.sidebar-->
+
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<div class="col-lg-12">
+				<h2>Main info</h2>
+			</div>
+			<div class="col-md-12">
+				<div class="panel panel-success">
+					<!-- panel-default -->
+					<div class="panel-heading" id="nuiheader"></div>
+					<div class="panel-body">
+						<div class="col-md-6 col-lg-6 col-sm-6 col-xs-6" id="nuiwr"></div>
+						<div class="col-md-6 col-lg-6 col-sm-6 col-xs-6" id="nuiinfo">info.</div>
+						<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12" id="nuicr"></div>
+					</div>
+				</div>
+			</div>
+
+		</div><!-- /.row -->
+
+	</div>
+	<!--/.main-->
+
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<!--script src="js/chart.min.js"></script>
+	<script src="js/chart-data.js"></script>
+	<script src="js/easypiechart.js"></script>
+	<script src="js/easypiechart-data.js"></script-->
+	<script src="js/bootstrap-datepicker.js"></script>
+	<script src="js/cookie.js"></script>
+	<script>
+
+		fetchData = function () {
+			makeRequest("/admin/read",
+				{ token: getAppToken() },
+				function (data) {
+					if (data.status == "ERR_AUTH") {
+						redirectToLogin();
+						return;
+					}
+
+					var wr = data.pstat + "<br/>";
+					var listLog = "<h3>Log reaction</h3>";
+
+					let listPost = data.listPost;
+					listPost.forEach(element => {
+						if (element.crushid.match(/\w/)) {
+							listLog += '<a href="https://facebook.com/' + element.crushid + '/posts/' + element.idPost + '" target="_blank">' + element.idPost + '</a>';
+						}
+						else
+							listLog += '<a href="https://www.facebook.com/permalink.php?story_fbid=' + element.idPost + '&id=' + element.crushid + '" target="_blank">' + element.idPost + '</a>';
+						listLog += '&nbsp; &nbsp;at: ' + new Date(element.starttime).toLocaleString() + '<br/>';
+					});
+
+					$('#nuiwr').html(listLog);
+					// $('#nuicr').html(wr);
+					$('#nuiheader').html(getDateStr(-1) +"&nbsp;&nbsp;&nbsp;"+ wr);
+				},
+				function (xhr, ajaxOptions, thrownError) {
+					alert("Có lỗi xảy ra, xin hãy thử lại \n" + thrownError);
+				}
+			);
+		}
+
+		setInterval(fetchData, 5000);
+
+		fetchData();
+
+		function uinfo() {
+			makeRequest(
+				"/admin/userinfo",
+				{ token: getAppToken() },
+				function (data) {
+					if (data.status !== 'OK') {
+						$('#nuiinfo').html("<h3>User Info</h3><b>id: " + data.data[0].uid + '</b><br/>Cannot get user info<br/>')
+						return;
+					}
+					/*var profile_pic_id = data.profile_pic.match(/[0-9]+_[0-9]+_[0-9]+/);
+					profile_pic_id = profile_pic_id[0].split('_');*/
+					$('#nuiinfo').html("<h3>User Info</h3><b>ID của bạn: " + data.data[0].uid + '</b><br/>Crush: ' +
+						"<a href=\"https://facebook.com/" + data.data[0].crushid + '\"" target=\"_blank\">Link facebook crush</a><br/>' +
+						"Loại Reaction: " + data.data[0].typereaction +
+						"<img src=\"https://cdn.iconscout.com/icon/free/png-64/love-2387666-1991064.png\" width=\"20px\"/><br/>" +
+						"<div id='btnStart'><button class=\"btn btn-primary\" onclick=\"sendActionReaction('start')\">Start Auto</button></div>");
+				},
+				function (xhr, ajaxOptions, thrownError) {
+					$('#nuiinfo').text(thrownError);
+				}
+			);
+		}
+		uinfo();
+
+		function sendActionReaction(action) {
+			makeRequest(
+				'/admin/run',
+				{
+					token: getAppToken(),
+					action: action
+				},
+				(data) => {
+					if (data.status !== 'OK') {
+						alert("Có lỗi xảy ra, xin hãy thử lại");
+					}
+					else {
+						if (action === 'stop' && !data.isRunning)
+							document.getElementById('btnStart').innerHTML = "<button id='btnStart' class=\"btn btn-primary\" onclick=\"sendActionReaction('start')\">Start Auto</button>";
+						else
+							document.getElementById('btnStart').innerHTML = "<button id='btnStart' class=\"btn btn-danger\" onclick=\"sendActionReaction('stop')\">Stop Auto</button>";
+					}
+				},
+				function (xhr, ajaxOptions, thrownError) {
+					$('#nuiinfo').text(thrownError);
+				}
+			);
+		}
+
+		function getDateStr(time) {
+			var currentdate;
+			if (time == -1) currentdate = new Date();
+			else currentdate = new Date(time);
+			return currentdate.getDate() + "/"
+				+ (currentdate.getMonth() + 1) + "/"
+				+ currentdate.getFullYear() + " "
+				+ (currentdate.getHours() < 10 ? "0" : "") + currentdate.getHours() + ":"
+				+ (currentdate.getMinutes() < 10 ? "0" : "") + currentdate.getMinutes() + ":"
+				+ (currentdate.getSeconds() < 10 ? "0" : "") + currentdate.getSeconds() + ".";
+		}
+
+		!function ($) {
+			$(document).on("click", "ul.nav li.parent > a > span.icon", function () {
+				$(this).find('em:first').toggleClass("glyphicon-minus");
+			});
+			$(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+		}(window.jQuery);
+
+		$(window).on('resize', function () {
+			if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+		})
+		$(window).on('resize', function () {
+			if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+		})
+	</script>
+</body>
+
+</html>
